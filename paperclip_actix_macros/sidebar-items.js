@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["api_v2_operation","Marker attribute for indicating that a function is an OpenAPI v2 compatible operation."],["api_v2_schema","Marker attribute for indicating that an object is an OpenAPI v2 compatible definition."]]});

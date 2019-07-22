@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PaperClipError","Global error which encapsulates all related errors."]],"mod":[["v2","Types and traits related to the OpenAPI v2 spec."]],"type":[["PaperClipResult","Generic result used throughout this library."]]});
