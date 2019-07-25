@@ -1,4 +1,4 @@
-//! Types and traits related to the [OpenAPI v2 spec](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md).
+//! Utilities related to the [OpenAPI v2 specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md).
 //!
 //! # Detailed example
 //!
@@ -82,10 +82,7 @@
 
 #[cfg(feature = "codegen")]
 pub mod codegen;
-pub mod im;
-pub mod models;
 mod resolver;
-pub mod schema;
 
 use self::resolver::Resolver;
 use crate::error::PaperClipError;
@@ -96,8 +93,9 @@ use std::io::{Read, Seek, SeekFrom};
 
 #[cfg(feature = "codegen")]
 pub use self::codegen::{DefaultEmitter, Emitter, EmitterState};
-pub use self::models::{Api, DefaultSchema};
-pub use self::schema::Schema;
+pub use paperclip_core::im;
+pub use paperclip_core::v2::models::{self, Api, DefaultSchema};
+pub use paperclip_core::v2::schema::{self, Schema};
 
 /// Deserialize the schema from the given reader. Currently, this only supports
 /// JSON and YAML formats.

@@ -1,6 +1,6 @@
 [workspace]
 members = [
-  "macros",
+  "core",
   "openapi",
   "plugins/actix-web"
 ]

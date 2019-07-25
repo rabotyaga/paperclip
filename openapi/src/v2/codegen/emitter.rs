@@ -18,26 +18,6 @@ use std::fs;
 use std::ops::Deref;
 use std::path::PathBuf;
 
-/// Checks if the given type/format matches a known Rust type and returns it.
-fn matching_unit_type(
-    format: Option<&DataTypeFormat>,
-    type_: Option<DataType>,
-) -> Option<&'static str> {
-    match format {
-        Some(DataTypeFormat::Int32) => Some("i32"),
-        Some(DataTypeFormat::Int64) => Some("i64"),
-        Some(DataTypeFormat::Float) => Some("f32"),
-        Some(DataTypeFormat::Double) => Some("f64"),
-        _ => match type_ {
-            Some(DataType::Integer) => Some("i64"),
-            Some(DataType::Number) => Some("f64"),
-            Some(DataType::Boolean) => Some("bool"),
-            Some(DataType::String) => Some("String"),
-            _ => None,
-        },
-    }
-}
-
 /// `Emitter` represents the interface for generating the relevant
 /// modules, API object definitions and the associated calls.
 pub trait Emitter: Sized {
@@ -434,7 +414,7 @@ where
         let mut schema_path = None;
         let mut params = vec![];
         for p in obj_params {
-            p.check(path)?; // validate the parameter
+            check_parameter(&p, path)?; // validate the parameter
 
             if let Some(def) = p.schema.as_ref() {
                 // If a schema exists, then get its path for later use.
@@ -603,4 +583,43 @@ impl EmittedUnit {
             _ => panic!("Emitted unit is not a known type"),
         }
     }
+}
+
+/// Checks if the given type/format matches a known Rust type and returns it.
+fn matching_unit_type(
+    format: Option<&DataTypeFormat>,
+    type_: Option<DataType>,
+) -> Option<&'static str> {
+    match format {
+        Some(DataTypeFormat::Int32) => Some("i32"),
+        Some(DataTypeFormat::Int64) => Some("i64"),
+        Some(DataTypeFormat::Float) => Some("f32"),
+        Some(DataTypeFormat::Double) => Some("f64"),
+        _ => match type_ {
+            Some(DataType::Integer) => Some("i64"),
+            Some(DataType::Number) => Some("f64"),
+            Some(DataType::Boolean) => Some("bool"),
+            Some(DataType::String) => Some("String"),
+            _ => None,
+        },
+    }
+}
+
+/// Checks a parameter against its associated path.
+fn check_parameter<S>(p: &models::Parameter<S>, path: &str) -> Result<(), Error> {
+    if p.in_ == ParameterIn::Body {
+        if p.schema.is_none() {
+            Err(PaperClipError::MissingSchemaForBodyParameter(
+                p.name.clone(),
+                path.into(),
+            ))?
+        }
+    } else if p.data_type.is_none() {
+        Err(PaperClipError::MissingParameterType(
+            p.name.clone(),
+            path.into(),
+        ))?
+    }
+
+    Ok(())
 }

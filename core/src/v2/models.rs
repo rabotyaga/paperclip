@@ -1,8 +1,9 @@
 //! Models used by OpenAPI v2.
 
-use super::{im::ArcRwLock, Schema};
-use crate::error::PaperClipError;
-use failure::Error;
+use crate::im::ArcRwLock;
+use super::schema::Schema;
+use lazy_static::lazy_static;
+use paperclip_macros::api_v2_schema_struct;
 use regex::{Captures, Regex};
 
 #[cfg(feature = "actix")]
@@ -87,7 +88,7 @@ use crate as paperclip; // hack for proc macro
 /// Default schema if your schema doesn't have any custom fields.
 ///
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
-#[api_v2_schema]
+#[api_v2_schema_struct]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DefaultSchema {}
 
@@ -303,27 +304,6 @@ where
             // We don't want parameters/fields to describe the actual refrenced object.
             SchemaRepr::Resolved { ref old, .. } => old.read().description().map(String::from),
         }
-    }
-}
-
-impl<S> Parameter<S> {
-    /// Checks if this parameter is valid.
-    pub fn check(&self, path: &str) -> Result<(), Error> {
-        if self.in_ == ParameterIn::Body {
-            if self.schema.is_none() {
-                Err(PaperClipError::MissingSchemaForBodyParameter(
-                    self.name.clone(),
-                    path.into(),
-                ))?
-            }
-        } else if self.data_type.is_none() {
-            Err(PaperClipError::MissingParameterType(
-                self.name.clone(),
-                path.into(),
-            ))?
-        }
-
-        Ok(())
     }
 }
 

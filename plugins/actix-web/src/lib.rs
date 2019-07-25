@@ -9,7 +9,7 @@ use actix_service::NewService;
 use actix_web::dev::{HttpServiceFactory, MessageBody, ServiceRequest, ServiceResponse, Transform};
 use actix_web::{web::HttpResponse, Error};
 use futures::IntoFuture;
-use paperclip::v2::models::{DefaultSchemaRaw, GenericApi, HttpMethod, Operation, OperationMap};
+use paperclip_core::v2::models::{DefaultSchemaRaw, GenericApi, HttpMethod, Operation, OperationMap};
 use parking_lot::RwLock;
 
 use std::collections::BTreeMap;
